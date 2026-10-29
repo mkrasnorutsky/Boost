@@ -9,7 +9,6 @@
 #include <boost/tokenizer.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/geometry.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -34,7 +33,5 @@ int main() {
     std::istringstream xml("<aircraft><name>C172P</name></aircraft>");
     boost::property_tree::ptree tree; boost::property_tree::read_xml(xml,tree);
     if (tree.get<std::string>("aircraft.name")!="C172P") return 6;
-    using Point=boost::geometry::model::d2::point_xy<double>;
-    if (boost::geometry::distance(Point(0,0),Point(3,4)) != 5.0) return 7;
     return 0;
 }

@@ -23,4 +23,4 @@ with tempfile.TemporaryDirectory(prefix='boost-validation-') as temp:
     subprocess.run(['xcrun','clang','-c',str(ROOT/'apple/anchor.c'),'-o',str(temp/'anchor.o')],check=True)
     subprocess.run(['xcrun','clang++','-std=c++17','-I'+str(ROOT),str(ROOT/'apple/scripts/boost_smoke.cpp'),str(temp/'anchor.o'),'-o',str(temp/'native')],check=True)
     subprocess.run([str(temp/'native')],check=True)
-    print('PASS: native bimap, multi-index, optional, lexical cast, tokenizer, XML and geometry behavior')
+    print('PASS: native bimap, multi-index, optional, lexical cast, tokenizer and XML behavior')

@@ -15,7 +15,7 @@ python3 apple/scripts/build_xcframework.py
 python3 apple/scripts/validate_xcframework.py
 ```
 
-Validation compiles and links representative bimap, multi-index, optional, lexical-cast, tokenizer, property-tree/XML and geometry APIs against all three iOS slices. The same behavioral checks run natively on the build host; this does not claim on-device runtime execution.
+Validation compiles and links representative bimap, multi-index, optional, lexical-cast, tokenizer and property-tree/XML APIs against all three iOS slices. The same behavioral checks run natively on the build host; this does not claim on-device runtime execution.
 
 ## SPM
 
@@ -34,3 +34,7 @@ python3 apple/scripts/package_release.py --tag 0.1.0
 ```
 
 Commit the generated `dist/Package.swift` as the root manifest and upload the ZIP, checksums and build manifest to the matching release. Published archive bytes must remain immutable.
+
+## Known upstream limitation
+
+With the Xcode 26.5 toolchain, including the broad `<boost/geometry.hpp>` umbrella exposes invalid `template` qualifiers in upstream `boost/qvm/quat_traits.hpp`. Neither this FlightGear nor SimGear revision uses Boost.Geometry. The complete header tree is preserved unchanged; shipping it does not imply that every Boost component has been validated on iOS. The package tests cover the APIs listed above.
