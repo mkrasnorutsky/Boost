@@ -1,0 +1,7 @@
+out/
+dist/
+.build/
+.swiftpm/
+Package.resolved
+.DS_Store
+__pycache__/
