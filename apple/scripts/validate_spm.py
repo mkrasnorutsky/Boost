@@ -17,5 +17,9 @@ let package = Package(name: "BoostClient", platforms: [.iOS("18.0")],
     for arch,sim in [('arm64',False),('arm64',True),('x86_64',True)]:
         sdk=subprocess.check_output(['xcrun','--sdk','iphonesimulator' if sim else 'iphoneos','--show-sdk-path'],text=True).strip()
         triple=arch+'-apple-ios18.0'+('-simulator' if sim else '')
-        subprocess.run(['swift','build','--triple',triple,'--sdk',sdk,'-c','release'],cwd=client,check=True)
+        subprocess.run(['swift','build','--triple',triple,'--sdk',sdk,'-Xcc','-isysroot','-Xcc',sdk,'-Xcxx','-isysroot','-Xcxx',sdk,'-Xlinker','-syslibroot','-Xlinker',sdk,'-c','release'],cwd=client,check=True)
+        binpath=subprocess.check_output(['swift','build','--triple',triple,'--sdk',sdk,'-c','release','--show-bin-path'],cwd=client,text=True).strip()
+        binary=Path(binpath)/'Client'
+        metadata=subprocess.check_output(['xcrun','vtool','-show-build',str(binary)],text=True)
+        assert ('IOSSIMULATOR' if sim else 'IOS') in metadata, metadata
         print('PASS: downstream SPM C++ consumer '+triple,flush=True)
