@@ -21,6 +21,12 @@ Validation compiles and links representative bimap, multi-index, optional, lexic
 
 Add `https://github.com/mkrasnorutsky/Boost.git`, version `0.1.0`, and select **Boost**. The package has no third-party dependencies. C++17 is used for package validation; consumers control their own language settings. SimGear-specific compatibility definitions remain the responsibility of the SimGear build.
 
+To resolve the release and compile/link a downstream C++ SPM consumer for all three architectures:
+
+```sh
+python3 apple/scripts/validate_spm.py
+```
+
 For local rebuilt artifacts, copy `apple/Package.local.swift` to `Package.swift`. For release packaging:
 
 ```sh

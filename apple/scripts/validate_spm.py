@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+"""Resolve release artifacts and build a downstream C++ consumer for every iOS architecture."""
+from pathlib import Path
+import subprocess,tempfile
+ROOT=Path(__file__).resolve().parents[2]
+with tempfile.TemporaryDirectory(prefix='boost-spm-client-') as directory:
+    client=Path(directory);sources=client/'Sources/Client';sources.mkdir(parents=True)
+    (sources/'main.cpp').write_text((ROOT/'apple/scripts/boost_smoke.cpp').read_text())
+    (client/'Package.swift').write_text('''// swift-tools-version: 5.9
+import PackageDescription
+let package = Package(name: "BoostClient", platforms: [.iOS("18.0")],
+    dependencies: [.package(path: "'''+str(ROOT)+'''")],
+    targets: [.executableTarget(name: "Client", dependencies: [.product(name: "Boost", package: "Boost")])],
+    cxxLanguageStandard: .cxx17)
+''')
+    subprocess.run(['swift','package','resolve'],cwd=client,check=True)
+    for arch,sim in [('arm64',False),('arm64',True),('x86_64',True)]:
+        sdk=subprocess.check_output(['xcrun','--sdk','iphonesimulator' if sim else 'iphoneos','--show-sdk-path'],text=True).strip()
+        triple=arch+'-apple-ios18.0'+('-simulator' if sim else '')
+        subprocess.run(['swift','build','--triple',triple,'--sdk',sdk,'-c','release'],cwd=client,check=True)
+        print('PASS: downstream SPM C++ consumer '+triple,flush=True)

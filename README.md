@@ -1,3 +1,7 @@
+# Boost iOS / Swift Package Manager distribution
+
+OneClickPilot packaging: see [apple/README.md](apple/README.md) for iOS XCFramework builds, SPM usage, validation and source provenance.
+
 # Boost C++ Libraries
 
 The Boost project provides free peer-reviewed portable C++ source libraries.
