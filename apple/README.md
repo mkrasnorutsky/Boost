@@ -19,7 +19,7 @@ Validation compiles and links representative bimap, multi-index, optional, lexic
 
 ## SPM
 
-Add `https://github.com/mkrasnorutsky/Boost.git`, version `0.1.0`, and select **Boost**. The package has no third-party dependencies. C++17 is used for package validation; consumers control their own language settings. SimGear-specific compatibility definitions remain the responsibility of the SimGear build.
+Add `https://github.com/mkrasnorutsky/Boost.git`, version `0.1.1`, and select **Boost**. The package has no third-party dependencies. C++17 is used for package validation; consumers control their own language settings. SimGear-specific compatibility definitions remain the responsibility of the SimGear build.
 
 To resolve the release and compile/link a downstream C++ SPM consumer for all three architectures:
 
@@ -30,7 +30,7 @@ python3 apple/scripts/validate_spm.py
 For local rebuilt artifacts, copy `apple/Package.local.swift` to `Package.swift`. For release packaging:
 
 ```sh
-python3 apple/scripts/package_release.py --tag 0.1.0
+python3 apple/scripts/package_release.py --tag 0.1.1
 ```
 
 Commit the generated `dist/Package.swift` as the root manifest and upload the ZIP, checksums and build manifest to the matching release. Published archive bytes must remain immutable.
@@ -38,3 +38,7 @@ Commit the generated `dist/Package.swift` as the root manifest and upload the ZI
 ## Known upstream limitation
 
 With the Xcode 26.5 toolchain, including the broad `<boost/geometry.hpp>` umbrella exposes invalid `template` qualifiers in upstream `boost/qvm/quat_traits.hpp`. Neither this FlightGear nor SimGear revision uses Boost.Geometry. The complete header tree is preserved unchanged; shipping it does not imply that every Boost component has been validated on iOS. The package tests cover the APIs listed above.
+
+## Xcode header layout (0.1.1)
+
+Binary module maps live under a module-specific header subdirectory, avoiding duplicate `include/module.modulemap` outputs when Xcode processes several static XCFrameworks together. The library bytes and public include paths are unchanged. Set `APPLE_BUILD_ROOT` to keep `out/` and `dist/` outside the checkout.

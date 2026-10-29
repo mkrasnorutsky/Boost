@@ -3,7 +3,9 @@
 from pathlib import Path
 import plistlib,subprocess,tempfile
 ROOT=Path(__file__).resolve().parents[2]
-artifact=ROOT/'dist/Boost.xcframework'
+import os
+WORK=Path(os.environ.get("APPLE_BUILD_ROOT", str(ROOT))).expanduser().resolve()
+artifact=WORK/'dist/Boost.xcframework'
 info=plistlib.loads((artifact/'Info.plist').read_bytes())
 assert len(info['AvailableLibraries'])==2
 with tempfile.TemporaryDirectory(prefix='boost-validation-') as temp:

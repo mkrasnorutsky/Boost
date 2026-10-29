@@ -3,21 +3,24 @@
 from pathlib import Path
 import json,shutil,subprocess
 ROOT=Path(__file__).resolve().parents[2]
+import os
+WORK=Path(os.environ.get("APPLE_BUILD_ROOT", str(ROOT))).expanduser().resolve()
 def run(*args):
     print('+',*map(str,args),flush=True)
     subprocess.run(list(map(str,args)),check=True)
 def main():
-    out=ROOT/'dist';out.mkdir(exist_ok=True);stage=out/'staging'
+    out=WORK/'dist';out.mkdir(exist_ok=True);stage=out/'staging'
     if stage.exists():shutil.rmtree(stage)
     stage.mkdir();headers=stage/'Headers'
     shutil.copytree(ROOT/'boost',headers/'boost')
     (headers/'CBoost.h').write_text('#pragma once\n#ifdef __cplusplus\nextern "C" {\n#endif\nunsigned int OneClickPilotBoostVersion(void);\n#ifdef __cplusplus\n}\n#endif\n')
     # Boost headers are C++ templates. Do not implicitly modularize the entire tree.
-    (headers/'module.modulemap').write_text('module CBoost { header "CBoost.h" export * }\n')
+    (headers/'CBoost').mkdir(exist_ok=True)
+    (headers/'CBoost/module.modulemap').write_text('module CBoost { header "../CBoost.h" export * }\n')
     libraries={}
     variants=[('ios-arm64','iphoneos','arm64'),('simulator-arm64','iphonesimulator','arm64'),('simulator-x86_64','iphonesimulator','x86_64')]
     for name,sdk,arch in variants:
-        folder=ROOT/'out'/name;folder.mkdir(parents=True,exist_ok=True)
+        folder=WORK/'out'/name;folder.mkdir(parents=True,exist_ok=True)
         sdkpath=subprocess.check_output(['xcrun','--sdk',sdk,'--show-sdk-path'],text=True).strip()
         triple=arch+'-apple-ios18.0'+('-simulator' if sdk=='iphonesimulator' else '')
         run('xcrun','clang','-target',triple,'-isysroot',sdkpath,'-O2','-c',ROOT/'apple/anchor.c','-o',folder/'anchor.o')
